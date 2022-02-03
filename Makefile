@@ -10,6 +10,7 @@ CFLAGS := -Wall -Wextra -Werror -g
 CPPFLAGS := -I$(LIBFT_DIR) -MMD
 LDFLAGS := -L$(LIBFT_DIR)
 LDLIBS := -lft
+S_FLAGS := -fsanitize=address
 				
 SRC :=		main.c			functions_0.c
 
@@ -25,13 +26,13 @@ all:	libft $(NAME)
 # bonus:	libft $(NAME_B)
 
 $(NAME): $(LIBFT_LIB) $(OBJ)
-	$(CC) $(LDFLAGS) $(OBJ) $(LDLIBS) -o $(NAME)
+	$(CC) $(LDFLAGS) $(OBJ) $(LDLIBS) $(S_FLAGS) -o $(NAME)
 
 # $(NAME_B): $(LIBFT_LIB) $(OBJ_B)
 # 	$(CC) $(LDFLAGS) $(OBJ_B) $(LDLIBS) -fsanitize=address -o $(NAME_B)
 
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) $(CPPFLAGS)  -c $< -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(S_FLAGS) -c $< -o $@
 
 $(LIBFT_LIB): libft
 

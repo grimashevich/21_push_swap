@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/03 17:40:03 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/03 18:22:57 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,29 @@ int	lst_count(t_dlist *list)
 		item = item->next;
 	}
 	return (count);
+}
+
+void delete_first_item(t_dlist *lst)
+{
+	t_item	*first;
+
+	if (lst->first == NULL)
+		return ;
+	first = lst->first;
+	if (lst->first == lst->last)
+	{
+		lst->first = NULL;
+		lst->second = NULL;
+		lst->last = NULL;
+	}
+	else
+	{
+		lst->second->prev = lst->last;
+		lst->last->next = lst->second;
+		lst->first = first->next;
+		lst->second = first->next->next;
+	}
+	free(first);
 }
 
 void print_lists(t_dlist *list_a, t_dlist *list_b) //TODO: Удалить перед сдачей

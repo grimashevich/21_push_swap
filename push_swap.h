@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/03 16:53:37 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/03 18:08:53 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,3 +34,4 @@ t_dlist	*create_list();
 void add_item_to_list(t_item *item, t_dlist *list);
 int	lst_count(t_dlist *list);
 void print_lists(t_dlist *list_a, t_dlist *list_b);
+void delete_first_item(t_dlist *lst);
