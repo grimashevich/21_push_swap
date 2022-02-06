@@ -27,10 +27,32 @@ void push(t_dlist *lst_from, t_dlist *lst_to)
 {
 	int	value;
 
+	if (lst_from->first == NULL)
+		return ;
 	value = lst_from->first->value;
 	delete_first_item(lst_from);
 	add_item_to_list(create_item(value), lst_to);
-	//TODO reverse rotate
+	reverse_rotate(lst_to);
 }
+
+void rotate(t_dlist *lst)
+{
+	if (lst == NULL || lst->first == lst->last)
+		return ;
+	lst->last = lst->first;
+	lst->first = lst->second;
+	lst->second = lst->second->next;
+}
+
+void reverse_rotate(t_dlist *lst)
+{
+	if (lst == NULL || lst->first == lst->last)
+		return ;
+	lst->first = lst->last;
+	lst->last = lst->first->prev;
+	lst->second = lst->first->next;
+}
+
+
 
 //TODO Останавился тут

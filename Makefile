@@ -12,7 +12,7 @@ LDFLAGS := -L$(LIBFT_DIR)
 LDLIBS := -lft
 S_FLAGS := -fsanitize=address
 				
-SRC :=		main.c			functions_0.c
+SRC :=		main.c		functions_0.c		lst_manipulation.c
 
 OBJ := $(SRC:%.c=$(OBJ_DIR)/%.o)
 # OBJ_B := $(SRC_B:%.c=$(OBJ_DIR)/%.o)

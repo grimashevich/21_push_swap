@@ -59,6 +59,16 @@ void add_item_to_list(t_item *item, t_dlist *list)
 	list->second = list->first->next;
 }
 
+void create_add_item_to_list(int value,t_dlist *list)
+{
+	t_item	*item;
+
+	item = create_item(value);
+	if (! item)
+		return ;
+	add_item_to_list(item, list);
+}
+
 int	lst_count(t_dlist *list)
 {
 	t_item	*item;
@@ -142,4 +152,16 @@ void print_lists(t_dlist *list_a, t_dlist *list_b) //TODO: Удалить пер
 		i++;
 	}
 	
+}
+ void free_list(t_dlist *lst)
+ {
+	 while (lst->first)
+	 	delete_first_item(lst);
+	 free(lst);
+ }
+
+void free_lists(t_dlist *lst1, t_dlist *lst2)
+{
+	free_list(lst1);
+	free_list(lst2);
 }
