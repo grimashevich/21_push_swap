@@ -6,9 +6,9 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/03 18:22:10 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/14 22:47:18 by EClown           ###   ########.fr       */
 /*                                                                            */
-/* *************************r************************************************* */
+/* ************************************************************************** */
 
 #include "push_swap.h"
 #include <time.h> //TODO Удалить перед сдачей
@@ -40,6 +40,69 @@ t_dlist *get_stack(int size) //TODO Удалить перед сдачей
 	}
 	free(list);
 	return(list2);
+}
+
+
+void auto_manipulation(t_dlist *lst_a, t_dlist *lst_b, char input[4])
+{
+	if (! ft_strncmp("sa", input, 3))
+	{
+		swap(lst_a);
+		print_lists(lst_a, lst_b);
+	}
+	else if (! ft_strncmp("sb", input, 3))
+	{
+		swap(lst_b);
+		print_lists(lst_a, lst_b);
+	}
+	else if (! ft_strncmp("ss", input, 3))
+	{
+		swap(lst_a);
+		swap(lst_b);
+		print_lists(lst_a, lst_b);
+	}
+	else if (! ft_strncmp("pa", input, 3))
+	{
+		push(lst_b, lst_a);
+		print_lists(lst_a, lst_b);
+	}
+	else if (! ft_strncmp("pb", input, 3))
+	{
+		push(lst_a, lst_b);
+		print_lists(lst_a, lst_b);
+	}
+	else if (! ft_strncmp("ra", input, 3))
+	{
+		rotate(lst_a);
+		print_lists(lst_a, lst_b);	
+	}
+	else if (! ft_strncmp("rb", input, 3))
+	{
+		rotate(lst_b);
+		print_lists(lst_a, lst_b);	
+	}
+	else if (! ft_strncmp("rr", input, 3))
+	{
+		rotate(lst_a);
+		rotate(lst_b);
+		print_lists(lst_a, lst_b);	
+	}
+	else if (! ft_strncmp("rra", input, 3))
+	{
+		reverse_rotate(lst_a);
+		print_lists(lst_a, lst_b);	
+	}
+	else if (! ft_strncmp("rrb", input, 3))
+	{
+		reverse_rotate(lst_b);
+		print_lists(lst_a, lst_b);	
+	}
+	else if (! ft_strncmp("rrr", input, 3))
+	{
+		reverse_rotate(lst_a);
+		reverse_rotate(lst_b);
+		print_lists(lst_a, lst_b);	
+	}
 }
 
 
@@ -134,7 +197,6 @@ int binary_search(int needle, int *haystack, int start, int end)
 {
 	int	pivot;
 	int	size;
-	int	result;
 
 	size = (end - start + 1);
 	pivot = size / 2 + start;
@@ -142,10 +204,9 @@ int binary_search(int needle, int *haystack, int start, int end)
 		return (pivot);
 	if (size == 1)
 		return (-1);
-	result = binary_search(needle, haystack, start, pivot - 1);
-	if (result < 0)
-		result = binary_search(needle, haystack, pivot, end);
-	return (result);
+	if (needle < haystack[pivot])
+		return (binary_search(needle, haystack, start, pivot - 1));
+	return (binary_search(needle, haystack, pivot, end));
 }
 
 void array_quick_sort(int *arr, int size)
@@ -224,7 +285,7 @@ int *create_array_from_stack(t_dlist *lst, int size)
 	return (result);	
 }
 
-void update_idexes(t_dlist *lst)
+int *update_idexes(t_dlist *lst)
 {
 	int		*array;
 	int		size;
@@ -235,7 +296,7 @@ void update_idexes(t_dlist *lst)
 	size = lst_count(lst);
 	array = create_array_from_stack(lst, size);
 	if (! array)
-		return ;
+		return (NULL);
 	array_quick_sort(array, size);
 	item = lst->first;
 	while (i < size)
@@ -243,24 +304,167 @@ void update_idexes(t_dlist *lst)
 		item->index = binary_search(item->value, array, 0, size - 1);
 		item = item->next;
 		i++;
-			
 	}
-	free(array);
+	return (array);
+}
+
+//TODO Перед сдачей переделать в принтер команд
+void do_command(t_pushswap *ps, char command[4])
+{
+	static int count;
+	printf("   - - - - - %d - - - - -\n", ++count);
+	auto_manipulation(ps->stack_a, ps->stack_b, command);
+	usleep(600000);
+}
+void sort_stage1(t_pushswap *ps)
+{
+	int		size_b;
+	int		i;
+
+	size_b = ps->size / 2;
+	i = 0;
+	while (1)
+	{
+		if (ps->stack_a->first->value <= ps->sub_median)
+		{
+			do_command(ps, "pb");
+			i++;
+			if (i == size_b)
+				break;
+			continue;
+		}
+		do_command(ps, "ra");
+	}
+	
+}
+/*
+check 2 integers order for stack a (0) or stack b (1)
+a - upper
+b - lower
+*/
+int is_normal_order(t_pushswap *ps, int a, int b, int stack)
+{
+	if (stack == 0)
+	{
+		if (a == ps->max && b == ps->median)
+			return (1);
+		if (a == ps->median && b == ps->max)
+			return (0);
+		return (a < b);
+	}
+	else if (stack == 1)
+	{
+		if (a == ps->min && b == ps->sub_median)
+			return (1);
+		if (a == ps->sub_median && b == ps->min)
+			return (0);
+		return (a > b);
+	}
+	return (0);
+}
+
+void is_stacks_sorted(t_pushswap *ps ,t_sort_stage2 *s2)
+{
+	t_item	*item;
+	t_item	*item2;
+	int		i;
+
+	if (s2->sorted1 && s2->sorted2)
+		return ;
+	item = ps->stack_a->first;
+	item2 = ps->stack_b->first;
+	s2->sorted1 = 1;
+	s2->sorted2 = 1;
+	i = 0;
+	while (i++ <= ps->size / 2 + 1)
+	{
+		if (s2->sorted1 && ! is_normal_order(ps, item->value, item->next->value, 0))
+			s2->sorted1 = 0;
+		if (s2->sorted2 && ! is_normal_order(ps, item2->value, item2->next->value, 1))
+			s2->sorted2 = 0;
+		if (! s2->sorted1 && ! s2->sorted2)
+			break;
+		item = item->next;
+		item2 = item2->next;
+	}
+}
+
+void sort_stage2_vars_init(t_sort_stage2 *s2)
+{
+	s2->swap1 = 0;
+	s2->swap2 = 0;
+	s2->sorted1 = 0;
+	s2->sorted2 = 0;
+	s2->ordered1 = 0;
+	s2->ordered2 = 0;
+}
+
+void sort_stage2(t_pushswap *ps)
+{
+	t_sort_stage2	s2;
+	
+	sort_stage2_vars_init(&s2);
+	while (1)
+	{	is_stacks_sorted(ps, &s2);
+		s2.swap2 = 0;
+		if (! s2.sorted1 && ! is_normal_order(ps, ps->stack_a->first->value, ps->stack_a->second->value,0))
+			s2.swap1 = 1;
+		s2.swap2 = 0;
+		if (! s2.sorted2 && ! is_normal_order(ps, ps->stack_b->first->value, ps->stack_b->second->value,1))
+			s2.swap2 = 1;
+		s2.ordered1 = (s2.sorted1 && ps->stack_a->first->value == ps->median);
+		s2.ordered2 = (s2.sorted2 && ps->stack_b->first->value == ps->sub_median);
+		if (s2.ordered1 && s2.ordered2)
+			break;
+		if (s2.swap1 && s2.swap2)
+			do_command(ps, "ss");
+		else if (s2.swap1 && ! s2.swap2)
+			do_command(ps, "sa");
+		else if (! s2.swap1 && s2.swap2)
+			do_command(ps, "sb");
+		if (! s2.ordered1 && ! s2.ordered2)
+			do_command(ps, "rr");
+		else if (! s2.ordered1)
+			do_command(ps, "ra");
+		else
+			do_command(ps, "rb");
+	}
+}
+
+void sort_stack(t_pushswap *ps)
+{
+	sort_stage1(ps);
+	sort_stage2(ps);
+}
+
+void update_math_stat(t_pushswap *ps)
+{
+	int	median_index = ps->size / 2 - 1;
+
+	ps->median = ps->sorted_array[median_index + 1];
+	ps->sub_median = ps->sorted_array[median_index];
+	ps->min = ps->sorted_array[0];
+	ps->max = ps->sorted_array[ps->size - 1];
 }
 
 int main(void)
 {
-	t_dlist *lst_a;
-	t_dlist *lst_b;
-	int		size;
+	t_pushswap	*ps;
+	ps = malloc(sizeof(t_pushswap));
+	if (! ps)
+		return (1);
 
 	srand(time(NULL));
-	size = 10;
-	lst_a = get_stack(size);
-	lst_b = create_list();
-	update_idexes(lst_a);
+	ps->size = 10;
+	ps->stack_a = get_stack(ps->size);
+	ps->stack_b = create_list();
+	ps->sorted_array = update_idexes(ps->stack_a);
+	update_math_stat(ps);
+	
+	sort_stack(ps);
+	sleep(5);
 	//print_lists(lst_a, lst_b);
-	manual_manipulation(lst_a, lst_b);
-	free_lists(lst_a, lst_b);
+	//manual_manipulation(ps->stack_a, ps->stack_b);
+	free_ps_struct(ps);
 	return (0);
 }

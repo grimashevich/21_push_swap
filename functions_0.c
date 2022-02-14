@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/03 18:22:57 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/14 16:17:02 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,8 +160,10 @@ void print_lists(t_dlist *list_a, t_dlist *list_b) //TODO: Удалить пер
 	 free(lst);
  }
 
-void free_lists(t_dlist *lst1, t_dlist *lst2)
+void free_ps_struct(t_pushswap *ps)
 {
-	free_list(lst1);
-	free_list(lst2);
+	free_list(ps->stack_a);
+	free_list(ps->stack_b);
+	free(ps->sorted_array);
+	free(ps);
 }
