@@ -43,19 +43,11 @@ t_dlist *get_stack(int size) //TODO Удалить перед сдачей
 }
 
 
-int main(void)
+void manual_manipulation(t_dlist *lst_a, t_dlist *lst_b)
 {
-	t_dlist *lst_a;
-	t_dlist *lst_b;
-	int		size;
-	int		count;
-
-	srand(time(NULL));
-	size = 10;
+	int	count;
+	
 	count = 0;
-	lst_a = get_stack(10);
-	lst_b = create_list();
-
 	print_lists(lst_a, lst_b);	
 	printf("- - - - - - - - - - - - - -\n");
 	while (1)
@@ -85,12 +77,12 @@ int main(void)
 			push(lst_b, lst_a);
 			print_lists(lst_a, lst_b);
 		}
-		if (! ft_strncmp("pb", input, 3))
+		else if (! ft_strncmp("pb", input, 3))
 		{
 			push(lst_a, lst_b);
 			print_lists(lst_a, lst_b);
 		}
-		if (! ft_strncmp("ra", input, 3))
+		else if (! ft_strncmp("ra", input, 3))
 		{
 			rotate(lst_a);
 			print_lists(lst_a, lst_b);	
@@ -124,8 +116,151 @@ int main(void)
 		}
 		else if (! ft_strncmp("0", input, 2))
 			break ;
+		else
+			count--;
 	}
+}
 
+void swap_int(int *a, int *b)
+{
+	int c;
+
+	c = *a;
+	*a = *b;
+	*b = c;
+}
+
+int binary_search(int needle, int *haystack, int start, int end)
+{
+	int	pivot;
+	int	size;
+	int	result;
+
+	size = (end - start + 1);
+	pivot = size / 2 + start;
+	if (haystack[pivot] == needle)
+		return (pivot);
+	if (size == 1)
+		return (-1);
+	result = binary_search(needle, haystack, start, pivot - 1);
+	if (result < 0)
+		result = binary_search(needle, haystack, pivot, end);
+	return (result);
+}
+
+void array_quick_sort(int *arr, int size)
+{
+	int	wall;
+	int pivot;
+	int	j;
+
+	if (size <= 1)
+		return;
+
+	wall = -1;
+	pivot = arr[size - 1];
+	j = 0;
+	while (j < size -1)
+	{
+		if (arr[j] < pivot)
+		{
+			wall++;
+			swap_int(&(arr[wall]), &(arr[j]));
+		}
+		j++;
+	}
+	wall++;
+	swap_int(&(arr[wall]), &(arr[size - 1]));
+	array_quick_sort(arr, wall);
+	array_quick_sort(&(arr[wall + 1]), size - wall - 1);
+}
+
+t_dlist *copy_stack(t_dlist *lst)
+{
+	t_dlist *lst_copy;
+	t_item	*item;
+	int		size;
+
+	size = lst_count(lst);
+	lst_copy = create_list();
+	if (! lst_copy)
+		return (NULL);
+	item = lst->first;
+	while (size)
+	{
+		create_add_item_to_list(item->value, lst_copy);
+		item = item->next;
+		size--;
+	}
+	return(lst_copy);
+}
+
+void print_arr(int *arr, int size)
+{
+	int	i;
+
+	i = 0;
+	while (i < size)
+		printf("%5d", arr[i++]);
+	printf("\n");
+}
+
+int *create_array_from_stack(t_dlist *lst, int size)
+{
+	int		*result;
+	t_item	*item;
+	int		i;
+
+	result = malloc(sizeof(int) * size);
+	if (! result)
+		return (NULL);
+	item = lst->first;
+	i = 0;
+	while (i < size)
+	{
+		result[i++] = item->value;
+		item = item->next;
+	}
+	return (result);	
+}
+
+void update_idexes(t_dlist *lst)
+{
+	int		*array;
+	int		size;
+	int		i;
+	t_item	*item;
+
+	i = 0;
+	size = lst_count(lst);
+	array = create_array_from_stack(lst, size);
+	if (! array)
+		return ;
+	array_quick_sort(array, size);
+	item = lst->first;
+	while (i < size)
+	{
+		item->index = binary_search(item->value, array, 0, size - 1);
+		item = item->next;
+		i++;
+			
+	}
+	free(array);
+}
+
+int main(void)
+{
+	t_dlist *lst_a;
+	t_dlist *lst_b;
+	int		size;
+
+	srand(time(NULL));
+	size = 10;
+	lst_a = get_stack(size);
+	lst_b = create_list();
+	update_idexes(lst_a);
+	//print_lists(lst_a, lst_b);
+	manual_manipulation(lst_a, lst_b);
 	free_lists(lst_a, lst_b);
 	return (0);
 }
