@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/14 22:47:18 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/15 22:08:42 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,29 +314,9 @@ void do_command(t_pushswap *ps, char command[4])
 	static int count;
 	printf("   - - - - - %d - - - - -\n", ++count);
 	auto_manipulation(ps->stack_a, ps->stack_b, command);
-	usleep(600000);
+	usleep(USLEEP_TIME);
 }
-void sort_stage1(t_pushswap *ps)
-{
-	int		size_b;
-	int		i;
 
-	size_b = ps->size / 2;
-	i = 0;
-	while (1)
-	{
-		if (ps->stack_a->first->value <= ps->sub_median)
-		{
-			do_command(ps, "pb");
-			i++;
-			if (i == size_b)
-				break;
-			continue;
-		}
-		do_command(ps, "ra");
-	}
-	
-}
 /*
 check 2 integers order for stack a (0) or stack b (1)
 a - upper
@@ -389,52 +369,96 @@ void is_stacks_sorted(t_pushswap *ps ,t_sort_stage2 *s2)
 	}
 }
 
-void sort_stage2_vars_init(t_sort_stage2 *s2)
+
+void do_todo(t_pushswap *ps, t_todo *item)
 {
-	s2->swap1 = 0;
-	s2->swap2 = 0;
-	s2->sorted1 = 0;
-	s2->sorted2 = 0;
-	s2->ordered1 = 0;
-	s2->ordered2 = 0;
+	t_todo	*tmp;
+
+	tmp = item;
+	while (tmp)
+	{
+		do_command(ps, tmp->value);
+		tmp = tmp->next;
+	}
+	clear_todo_list(&item);
 }
 
-void sort_stage2(t_pushswap *ps)
+int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 {
-	t_sort_stage2	s2;
-	
-	sort_stage2_vars_init(&s2);
-	while (1)
-	{	is_stacks_sorted(ps, &s2);
-		s2.swap2 = 0;
-		if (! s2.sorted1 && ! is_normal_order(ps, ps->stack_a->first->value, ps->stack_a->second->value,0))
-			s2.swap1 = 1;
-		s2.swap2 = 0;
-		if (! s2.sorted2 && ! is_normal_order(ps, ps->stack_b->first->value, ps->stack_b->second->value,1))
-			s2.swap2 = 1;
-		s2.ordered1 = (s2.sorted1 && ps->stack_a->first->value == ps->median);
-		s2.ordered2 = (s2.sorted2 && ps->stack_b->first->value == ps->sub_median);
-		if (s2.ordered1 && s2.ordered2)
-			break;
-		if (s2.swap1 && s2.swap2)
-			do_command(ps, "ss");
-		else if (s2.swap1 && ! s2.swap2)
-			do_command(ps, "sa");
-		else if (! s2.swap1 && s2.swap2)
-			do_command(ps, "sb");
-		if (! s2.ordered1 && ! s2.ordered2)
-			do_command(ps, "rr");
-		else if (! s2.ordered1)
-			do_command(ps, "ra");
-		else
-			do_command(ps, "rb");
+	return (b_item->value < a_item->value  && 
+			(b_item->prev->value > a_item->value || 
+				b_item->prev->value == get_min(ps, 'b')));
+}
+
+/*
+1. Создает 4 стека команд по 2 для a и b (прямой и обратный проход)
+2. Компанует, выбирает оптимальный по стоимости.
+3. Сравнивает со стеком prev_best, выбирает лучший, а второй удаляет.
+*/
+
+t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
+{
+	t_item	*current;
+	t_todo	*todo_a;
+	t_todo	*todo_b;
+
+	todo_a = NULL;
+	todo_b = NULL;
+	current = ps->stack_a->first;
+	while (current != a_item)
+	{
+		todo_a = add_todo_last("ra", todo_a);
+		current = current->next;
 	}
+	current = ps->stack_b->first;
+	while (! is_place_for_push(ps, a_item, current))
+	{
+		todo_b = add_todo_last("rb", todo_b);
+		current = current->next;
+	}
+	/* TODO Остановился тут, сделать 2 обратных прохода и желательно внутренности циклов
+	в одну функцию */
+
+	
+}
+
+void push_b_best(t_pushswap *ps, int a_size)
+{
+	t_todo	*best_push_b;
+	t_item	*current;
+
+	if (ps->size - a_size < 2)
+	{
+		do_todo(ps, create_todo("pb"));
+		return ;
+	}
+	current = ps->stack_a->first;
+	best_push_b = NULL;
+	while (1)
+	{
+		best_push_b = get_best_push_b(ps, current, best_push_b);
+		current = current->next;
+		if (current == ps->stack_a->first)
+			break;
+	}
+	
+}
+
+void sort_stage1(t_pushswap *ps)
+{
+	int	stack_a_size;
+
+	stack_a_size = lst_count(ps->stack_a);
+	while (stack_a_size > 0)
+	{
+		push_b_best(ps, stack_a_size);
+		stack_a_size--;
+	}	
 }
 
 void sort_stack(t_pushswap *ps)
 {
 	sort_stage1(ps);
-	sort_stage2(ps);
 }
 
 void update_math_stat(t_pushswap *ps)
@@ -461,9 +485,9 @@ int main(void)
 	ps->sorted_array = update_idexes(ps->stack_a);
 	update_math_stat(ps);
 	
+	print_lists(ps->stack_a, ps->stack_b);
+	usleep(USLEEP_TIME);
 	sort_stack(ps);
-	sleep(5);
-	//print_lists(lst_a, lst_b);
 	//manual_manipulation(ps->stack_a, ps->stack_b);
 	free_ps_struct(ps);
 	return (0);

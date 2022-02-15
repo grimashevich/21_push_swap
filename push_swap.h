@@ -6,13 +6,15 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/14 22:16:51 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/15 21:26:10 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "libft/libft.h"
 #include <stdio.h>		//TODO Удалить перед сдачей
+
+#define USLEEP_TIME 500000
 
 typedef struct s_item
 {
@@ -53,6 +55,12 @@ typedef struct s_sort_stage2
 	int	ordered2;
 } t_sort_stage2;
 
+typedef struct s_todo
+{
+	char			value[4];
+	struct s_todo	*next;
+} t_todo;
+
 t_item	*create_item(int value);
 t_dlist	*create_list();
 void	add_item_to_list(t_item *item, t_dlist *list);
@@ -65,6 +73,12 @@ void	push(t_dlist *lst_from, t_dlist *lst_to);
 void	rotate(t_dlist *lst);
 void	reverse_rotate(t_dlist *lst);
 void	create_add_item_to_list(int value,t_dlist *list);
+int		get_max(t_pushswap *ps, char stack_name);
+int		get_min(t_pushswap *ps, char stack_name);
+t_todo	*create_todo(const char *str);
+void	clear_todo_list(t_todo **first_item);
+t_todo	*add_todo_last(char value[4], t_todo *first_item);
+t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 
 /*
 10
@@ -107,4 +121,28 @@ void	create_add_item_to_list(int value,t_dlist *list);
 /*
 Если встретили неверно выставленные элементы в левом стэке
 до того, как заполнили правый - делаем swap. ????
+*/
+
+/*
+Оптимизация алгоритма 2
+
+Можно запушить число в стэк Б на 1 ротэйт раньше, если двойной своп 
+	полезен так же для стека А.
+
+*/
+
+
+/*
+
+	|  |	|  |
+	|  |	|  |
+	|  |	|  |
+	|  |	|  |
+	|  |	| 1|
+	|  |	| 0|
+	| 7|	| 6|
+	| 5|	| 4|
+	| 8|	| 3|
+	| 9|	| 2|
+	
 */

@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/14 16:17:02 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/15 20:52:42 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,3 +167,98 @@ void free_ps_struct(t_pushswap *ps)
 	free(ps->sorted_array);
 	free(ps);
 }
+
+int get_max(t_pushswap *ps, char stack_name)
+{
+	t_item	*item;
+	t_dlist	*stack;
+	int		max_int;
+
+	if (stack_name == 'a')
+		stack = ps->stack_a;
+	else
+		stack = ps->stack_b;
+	
+	item = stack->first;
+	max_int = item->value;
+	item = item->next;
+	while (item != stack->first)
+	{
+		if (item->value > max_int)
+			max_int = item->value;
+	}
+	return (max_int);
+}
+
+int get_min(t_pushswap *ps, char stack_name)
+{
+	t_item	*item;
+	t_dlist	*stack;
+	int		min_int;
+
+	if (stack_name == 'a')
+		stack = ps->stack_a;
+	else
+		stack = ps->stack_b;
+	
+	item = stack->first;
+	min_int = item->value;
+	item = item->next;
+	while (item != stack->first)
+	{
+		if (item->value < min_int)
+			min_int = item->value;
+	}
+	return (min_int);
+}
+
+void clear_todo_list(t_todo **first_item)
+{
+	t_todo	*current;
+	t_todo	*prev;
+	
+	current = *first_item;
+	while (current)
+	{
+		prev = current;
+		current = current->next;
+		free(prev);
+	}
+	*first_item = NULL;
+}
+
+t_todo *add_todo_last(char value[4], t_todo *first_item)
+{
+	t_todo	*tmp;
+	t_todo	*new_item;
+
+	new_item = create_todo(value);
+	if (new_item == NULL)
+		return (first_item);
+	if (first_item == NULL)
+		return (new_item);
+	tmp = first_item;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new_item;
+	return (first_item);
+}
+
+t_todo *create_todo(const char *str)
+{
+	t_todo	*item;
+	int		i;
+
+	if (ft_strlen(str)  > 3)
+		return (NULL);
+	item = malloc(sizeof(t_todo));
+	if (item == NULL)
+		return (NULL);
+	i = 0;
+	while (*str)
+		item->value[i++] = *(str++);
+	item->value[i] = 0;
+	item->next = NULL;
+	return (item);
+}
+
