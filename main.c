@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/15 22:08:42 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/16 22:33:06 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,7 +312,7 @@ int *update_idexes(t_dlist *lst)
 void do_command(t_pushswap *ps, char command[4])
 {
 	static int count;
-	printf("   - - - - - %d - - - - -\n", ++count);
+	printf("   - - - - - %d - - - - -| %s\n", ++count, command);
 	auto_manipulation(ps->stack_a, ps->stack_b, command);
 	usleep(USLEEP_TIME);
 }
@@ -385,9 +385,129 @@ void do_todo(t_pushswap *ps, t_todo *item)
 
 int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 {
-	return (b_item->value < a_item->value  && 
-			(b_item->prev->value > a_item->value || 
-				b_item->prev->value == get_min(ps, 'b')));
+	if (a_item->value > b_item->value && a_item->value < b_item->prev->value)
+		return (1);
+	if (a_item->value < get_min(ps, 'b') && 
+			get_min(ps, 'b') == b_item->prev->value && get_max(ps, 'b') == b_item->value)
+		return (1);
+	if (a_item->value > get_max(ps, 'b') &&
+			get_min(ps, 'b') == b_item->prev->value && get_max(ps, 'b') == b_item->value)
+		return (1);
+	return (0);
+
+}
+
+void t_todo_rotate_init(t_todo_rotate *todo4)
+{
+	todo4->ra = NULL;
+	todo4->rb = NULL;
+	todo4->rra = NULL;
+	todo4->rrb = NULL;
+}
+
+
+void add_todo_and_scroll(char str[4], t_todo **todo_list, t_todo **scroll)
+{
+	*todo_list = add_todo_last(str, *todo_list);
+	*scroll = (*scroll)->next;
+}
+
+t_todo *merge_todo(t_todo *todo1, t_todo *todo2)
+{
+	t_todo	*result;
+
+	result = NULL;
+	while (todo1)
+	{
+		if (ft_strncmp(todo1->value, "ra", 3) == 0 && todo2 &&
+				ft_strncmp(todo2->value, "rb", 3) == 0)
+			add_todo_and_scroll("rr", &result, &todo2);
+		else if (ft_strncmp(todo1->value, "rra", 4) == 0 && todo2 &&
+				ft_strncmp(todo2->value, "rrb", 4) == 0)
+			add_todo_and_scroll("rrr", &result, &todo2);
+		else
+			result = add_todo_last(todo1->value, result);
+		todo1 = todo1->next;
+	}
+	while (todo2)
+		add_todo_and_scroll(todo2->value, &result, &todo2);
+	result = add_todo_last("pb", result);
+	return result;
+}
+
+
+/*
+Compare and return best todo command list.
+Shorter means better.
+*/
+t_todo *choose_best_todo(t_todo **todo1, t_todo **todo2)
+{
+	if (*todo1 == NULL)
+	{
+		if (*todo2 == NULL)
+			return (NULL);
+		return (*todo2);
+	}
+	else if (*todo2 == NULL)
+		return (*todo1);
+
+	if (todo_count(*todo1) <= todo_count(*todo2))
+	{
+		clear_todo_list(todo2);
+		return (*todo1);
+	}
+	clear_todo_list(todo1);
+	return (*todo2);
+}
+
+t_todo *get_best_from_todo4(t_todo_rotate *todo4)
+{
+	t_todo	*best;
+	t_todo	*best2;
+
+	best = merge_todo(todo4->ra, todo4->rb);
+	best2 = merge_todo(todo4->rra, todo4->rrb);
+	best = choose_best_todo(&best, &best2);
+	best2 = merge_todo(todo4->ra, todo4->rrb);
+	best = choose_best_todo(&best, &best2);
+	best2 = merge_todo(todo4->rra, todo4->rb);
+	best = choose_best_todo(&best, &best2);
+	clear_todo_list(&(todo4->ra));
+	clear_todo_list(&(todo4->rb));
+	clear_todo_list(&(todo4->rra));
+	clear_todo_list(&(todo4->rrb));
+	return (best);
+}
+
+
+void update_todo4(t_todo_rotate *todo4, char stack, char direction, t_item **current)
+{
+	if (direction == 'd')
+	{
+		if (stack == 'a')
+		{
+			todo4->ra = add_todo_last("ra", todo4->ra);
+			*current = (*current)->prev;
+		}
+		else if (stack == 'b')
+		{
+			todo4->rb = add_todo_last("rb", todo4->rb);
+			*current = (*current)->next;
+		}
+	}
+	else if (direction == 'u')
+	{
+		if (stack == 'a')
+		{
+			todo4->rra = add_todo_last("rra", todo4->rra);
+			*current = (*current)->next;
+		}
+		else if (stack == 'b')
+		{
+			todo4->rrb = add_todo_last("rrb", todo4->rrb);
+			*current = (*current)->prev;
+		}
+	}
 }
 
 /*
@@ -398,32 +518,32 @@ int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 
 t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 {
-	t_item	*current;
-	t_todo	*todo_a;
-	t_todo	*todo_b;
+	t_item			*current;
+	t_todo_rotate	todo4;
+	t_todo			*best;
 
-	todo_a = NULL;
-	todo_b = NULL;
-	current = ps->stack_a->first;
-	while (current != a_item)
-	{
-		todo_a = add_todo_last("ra", todo_a);
-		current = current->next;
-	}
+	t_todo_rotate_init(&todo4);
+	current = a_item;
+	while (current != ps->stack_a->first)
+		update_todo4(&todo4, 'a', 'd', &current);
 	current = ps->stack_b->first;
 	while (! is_place_for_push(ps, a_item, current))
-	{
-		todo_b = add_todo_last("rb", todo_b);
-		current = current->next;
-	}
-	/* TODO Остановился тут, сделать 2 обратных прохода и желательно внутренности циклов
-	в одну функцию */
-
-	
+		update_todo4(&todo4, 'b', 'd', &current);
+	current = a_item;
+	while (current != ps->stack_a->first)
+		update_todo4(&todo4, 'a', 'u', &current);
+	current = ps->stack_b->first;
+	while (! is_place_for_push(ps, a_item, current))
+		update_todo4(&todo4, 'b', 'u', &current);
+	best = get_best_from_todo4(&todo4);
+	best = choose_best_todo(&best, &prev_best);
+	return (best);
 }
 
 void push_b_best(t_pushswap *ps, int a_size)
 {
+	int i;
+
 	t_todo	*best_push_b;
 	t_item	*current;
 
@@ -434,16 +554,21 @@ void push_b_best(t_pushswap *ps, int a_size)
 	}
 	current = ps->stack_a->first;
 	best_push_b = NULL;
+	i = 0;
 	while (1)
 	{
 		best_push_b = get_best_push_b(ps, current, best_push_b);
 		current = current->next;
-		if (current == ps->stack_a->first)
+		if (i++ > ps->size || current == ps->stack_a->first)
 			break;
 	}
-	
+	do_todo(ps, best_push_b);
 }
 
+
+/*
+Until stack a elements count > 0 make push to stack b
+*/
 void sort_stage1(t_pushswap *ps)
 {
 	int	stack_a_size;
@@ -456,9 +581,32 @@ void sort_stage1(t_pushswap *ps)
 	}	
 }
 
+void sort_stage2(t_pushswap *ps)
+{
+	if (ps->stack_b->first->value <= ps->median)
+	{
+		while (ps->stack_b->first->value != ps->max)
+			do_command(ps, "rb");
+		return ;
+	}
+	while (ps->stack_b->first->value != ps->max)
+		do_command(ps, "rrb");
+}
+
+void sort_stage3(t_pushswap *ps)
+{
+	int	i;
+
+	i = ps->size;
+	while (i-- > 0)
+		do_command(ps, "pa");
+}
+
 void sort_stack(t_pushswap *ps)
 {
 	sort_stage1(ps);
+	sort_stage2(ps);
+	sort_stage3(ps);
 }
 
 void update_math_stat(t_pushswap *ps)
@@ -471,7 +619,7 @@ void update_math_stat(t_pushswap *ps)
 	ps->max = ps->sorted_array[ps->size - 1];
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	t_pushswap	*ps;
 	ps = malloc(sizeof(t_pushswap));
@@ -479,8 +627,17 @@ int main(void)
 		return (1);
 
 	srand(time(NULL));
-	ps->size = 10;
+	
+	if (argc < 2)
+		ps->size = 10;
+	else
+		ps->size = ft_atoi(argv[1]);
 	ps->stack_a = get_stack(ps->size);
+	
+	// ps->stack_a = create_list();
+	// create_add_item_to_list(0, ps->stack_a);
+	// create_add_item_to_list(2, ps->stack_a);
+	// create_add_item_to_list(1, ps->stack_a);
 	ps->stack_b = create_list();
 	ps->sorted_array = update_idexes(ps->stack_a);
 	update_math_stat(ps);
@@ -488,6 +645,7 @@ int main(void)
 	print_lists(ps->stack_a, ps->stack_b);
 	usleep(USLEEP_TIME);
 	sort_stack(ps);
+	printf("\n\n");
 	//manual_manipulation(ps->stack_a, ps->stack_b);
 	free_ps_struct(ps);
 	return (0);

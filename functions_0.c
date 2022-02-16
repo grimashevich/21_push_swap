@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/15 20:52:42 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/16 22:02:18 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void delete_first_item(t_dlist *lst)
 
 void print_lists(t_dlist *list_a, t_dlist *list_b) //TODO: Удалить перед сдачей
 {
+	return;
 	int 	count_a;
 	int 	count_b;
 	int 	count_ab;
@@ -186,6 +187,7 @@ int get_max(t_pushswap *ps, char stack_name)
 	{
 		if (item->value > max_int)
 			max_int = item->value;
+		item = item->next;
 	}
 	return (max_int);
 }
@@ -208,6 +210,7 @@ int get_min(t_pushswap *ps, char stack_name)
 	{
 		if (item->value < min_int)
 			min_int = item->value;
+		item = item->next;
 	}
 	return (min_int);
 }
@@ -227,7 +230,7 @@ void clear_todo_list(t_todo **first_item)
 	*first_item = NULL;
 }
 
-t_todo *add_todo_last(char value[4], t_todo *first_item)
+t_todo *	add_todo_last(char value[4], t_todo *first_item)
 {
 	t_todo	*tmp;
 	t_todo	*new_item;
@@ -262,3 +265,16 @@ t_todo *create_todo(const char *str)
 	return (item);
 }
 
+int todo_count(t_todo *todo)
+{
+	int	count;
+
+	count = 0;
+	while (todo)
+	{
+		count++;
+		todo = todo->next;
+	}
+	return (count);
+	
+}

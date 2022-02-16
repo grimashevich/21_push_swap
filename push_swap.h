@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/15 21:26:10 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/16 22:00:17 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "libft/libft.h"
 #include <stdio.h>		//TODO Удалить перед сдачей
 
-#define USLEEP_TIME 500000
+#define USLEEP_TIME 0
 
 typedef struct s_item
 {
@@ -61,6 +61,14 @@ typedef struct s_todo
 	struct s_todo	*next;
 } t_todo;
 
+typedef struct s_todo_rotate
+{
+	t_todo	*ra;
+	t_todo	*rb;
+	t_todo	*rra;
+	t_todo	*rrb;
+} t_todo_rotate;
+
 t_item	*create_item(int value);
 t_dlist	*create_list();
 void	add_item_to_list(t_item *item, t_dlist *list);
@@ -78,7 +86,8 @@ int		get_min(t_pushswap *ps, char stack_name);
 t_todo	*create_todo(const char *str);
 void	clear_todo_list(t_todo **first_item);
 t_todo	*add_todo_last(char value[4], t_todo *first_item);
-t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
+t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best);
+int		todo_count(t_todo *todo);
 
 /*
 10
@@ -112,11 +121,6 @@ t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 	|10|	| 0|
 */
 
-/*
-	| 2|    |  |
-	| 1|    |  |
-	| 0|    |  |
-*/
 
 /*
 Если встретили неверно выставленные элементы в левом стэке
@@ -144,5 +148,13 @@ t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 	| 5|	| 4|
 	| 8|	| 3|
 	| 9|	| 2|
-	
+
+
+	|  |	|  |
+	|  |	|  |
+	| 2|	|  |
+	| 0|	| 3|
+	| 1|	| 4|
+
+
 */
