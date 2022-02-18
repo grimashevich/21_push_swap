@@ -551,9 +551,6 @@ int main(int argc, char *argv[])
 	ps->stack_a = get_stack(ps->size);
 	
 	ps->stack_b = create_list();
-	create_add_item_to_list(	 5	, ps->stack_b);
-	create_add_item_to_list(	 2	, ps->stack_b);
-	create_add_item_to_list(	 0	, ps->stack_b);
 	create_add_item_to_list(	50	, ps->stack_b);
 	create_add_item_to_list(	45	, ps->stack_b);
 	create_add_item_to_list(	37	, ps->stack_b);
@@ -561,7 +558,10 @@ int main(int argc, char *argv[])
 	create_add_item_to_list(	15	, ps->stack_b);
 	create_add_item_to_list(	12	, ps->stack_b);
 	create_add_item_to_list(	 9	, ps->stack_b);
-	ps->stack_b->min = ps->stack_b->second->next;
+	create_add_item_to_list(	 5	, ps->stack_b);
+	create_add_item_to_list(	 2	, ps->stack_b);
+	create_add_item_to_list(	 0	, ps->stack_b);
+	ps->stack_b->min = ps->stack_b->last;
 	ps->stack_b->max = ps->stack_b->min->next;
 	int *array = create_array_from_stack_rev(ps->stack_b->min, 10);
 	t_rotate_count *rc = malloc(sizeof(t_rotate_count));
@@ -570,14 +570,19 @@ int main(int argc, char *argv[])
 	rc->rra = 0;
 	rc->rrb = 0;
 /*
+         n   f                     
 
-	[0] [2] [5] [9] [12] [15] [20]
+	[0] [2] [5] [9] [12] [15] [20] [37] [45] [50]
 	
+     0   1   2   3   4    5    6    7    8    9
 */
 	
-	fill_pre_todo(ps, array, 10, 6, rc);
+	fill_pre_todo(ps, array, 10, -6, rc);
+	fill_pre_todo(ps, array, 10, 4, rc);
 	fill_pre_todo(ps, array, 10, 3, rc);
 	fill_pre_todo(ps, array, 10, 10, rc);
+	fill_pre_todo(ps, array, 10, 60, rc);
+	fill_pre_todo(ps, array, 10, 25, rc);
 
 	return (0);
 

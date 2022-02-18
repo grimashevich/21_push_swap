@@ -265,10 +265,16 @@ void fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_c
 	if (new > ps->stack_b->max->value || new < ps->stack_b->min->value)
 	{
 		rc->rrb = arr_size - 1 - first_index;
-		rc->rb = arr_size % (arr_size - rc->rrb);
+		rc->rb = (arr_size - rc->rrb) % arr_size;
 		return;
 	}
 	new_index = binary_search_place(new, array, 0, arr_size - 1);
 	rc->rrb = new_index - first_index;
-	rc->rb = arr_size % (arr_size - rc->rrb);
+	if (rc->rrb < 0)
+	{
+		rc->rb = rc->rrb * -1;
+		rc->rrb = arr_size - rc->rb;
+		return;
+	}
+	rc->rb = (arr_size - rc->rrb) % arr_size;
 }
