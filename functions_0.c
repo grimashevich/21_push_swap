@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/16 22:02:18 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/17 17:06:42 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,4 +277,11 @@ int todo_count(t_todo *todo)
 	}
 	return (count);
 	
+}
+
+int min_int(int a, int b)
+{
+	if (a < b)
+		return (a);
+	return (b);
 }

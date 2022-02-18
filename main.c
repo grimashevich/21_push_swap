@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/16 22:33:06 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/17 19:01:19 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,7 +314,23 @@ void do_command(t_pushswap *ps, char command[4])
 	static int count;
 	printf("   - - - - - %d - - - - -| %s\n", ++count, command);
 	auto_manipulation(ps->stack_a, ps->stack_b, command);
-	usleep(USLEEP_TIME);
+	if (! ft_strncmp("pb", command, 3))
+	{
+		if (ps->stack_b->first == ps->stack_b->last)
+		{
+			ps->max_b = ps->stack_b->first->value;
+			ps->min_b = ps->stack_b->first->value;
+		}
+		else
+		{
+			if (ps->stack_b->first->value > ps->max_b)
+				ps->max_b = ps->stack_b->first->value;
+			else if (ps->stack_b->first->value < ps->min_b)
+				ps->min_b = ps->stack_b->first->value;
+		}
+	}
+	
+	//usleep(USLEEP_TIME);
 }
 
 /*
@@ -385,14 +401,22 @@ void do_todo(t_pushswap *ps, t_todo *item)
 
 int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 {
+	// if (a_item->value > b_item->value && a_item->value > b_item->prev->value)
+	// 	return (0);
+	// if (a_item->value < b_item->value && a_item->value < b_item->prev->value)
+	// 	return (0);
 	if (a_item->value > b_item->value && a_item->value < b_item->prev->value)
 		return (1);
-	if (a_item->value < get_min(ps, 'b') && 
-			get_min(ps, 'b') == b_item->prev->value && get_max(ps, 'b') == b_item->value)
+	if (a_item->value < ps->min_b && 
+			ps->min_b == b_item->prev->value && ps->max_b == b_item->value)
 		return (1);
-	if (a_item->value > get_max(ps, 'b') &&
-			get_min(ps, 'b') == b_item->prev->value && get_max(ps, 'b') == b_item->value)
+	if (a_item->value > ps->max_b &&
+			ps->min_b == b_item->prev->value && ps->max_b == b_item->value)
 		return (1);
+	// if (a_item->value > ps->max_b && b_item->value == ps->max_b)
+	// 	return (1);
+	// if (a_item->value < ps->min_b && b_item->prev->value == ps->min_b)
+	// 	return (1);
 	return (0);
 
 }
@@ -536,15 +560,18 @@ t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 	while (! is_place_for_push(ps, a_item, current))
 		update_todo4(&todo4, 'b', 'u', &current);
 	best = get_best_from_todo4(&todo4);
-	best = choose_best_todo(&best, &prev_best);
+	best = choose_best_todo(&prev_best, &best);
 	return (best);
 }
 
 void push_b_best(t_pushswap *ps, int a_size)
 {
-	int i;
-
+	int		i;
 	t_todo	*best_push_b;
+	t_todo	*prev_best_push_b;
+	int		best_push_size;
+	int		border_distance;
+
 	t_item	*current;
 
 	if (ps->size - a_size < 2)
@@ -555,11 +582,22 @@ void push_b_best(t_pushswap *ps, int a_size)
 	current = ps->stack_a->first;
 	best_push_b = NULL;
 	i = 0;
+	best_push_size = 1;
 	while (1)
 	{
+		border_distance = min_int(i, a_size - i);
+		i++;
+		if (border_distance > best_push_size )
+		{
+			current = current->next;
+			continue;
+		}
+		prev_best_push_b = best_push_b;
 		best_push_b = get_best_push_b(ps, current, best_push_b);
+		if (prev_best_push_b != best_push_b)
+			best_push_size = todo_count(best_push_b);
 		current = current->next;
-		if (i++ > ps->size || current == ps->stack_a->first)
+		if (current == ps->stack_a->first || i > ps->size)
 			break;
 	}
 	do_todo(ps, best_push_b);
@@ -617,11 +655,14 @@ void update_math_stat(t_pushswap *ps)
 	ps->sub_median = ps->sorted_array[median_index];
 	ps->min = ps->sorted_array[0];
 	ps->max = ps->sorted_array[ps->size - 1];
+	ps->my_count = 0;
 }
 
 int main(int argc, char *argv[])
 {
 	t_pushswap	*ps;
+	unsigned long curtime =  time(NULL);
+
 	ps = malloc(sizeof(t_pushswap));
 	if (! ps)
 		return (1);
@@ -648,5 +689,6 @@ int main(int argc, char *argv[])
 	printf("\n\n");
 	//manual_manipulation(ps->stack_a, ps->stack_b);
 	free_ps_struct(ps);
+	printf("Execution time: %lu sec.\n", time(NULL) - curtime);
 	return (0);
 }

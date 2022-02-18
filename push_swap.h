@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/16 22:00:17 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/17 18:06:53 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,9 @@ typedef struct s_pushswap
 	int		sub_median;
 	int		min;
 	int		max;
+	int		max_b;
+	int		min_b;
+	int		my_count;
 } t_pushswap;
 
 typedef struct s_sort_stage2
@@ -88,6 +91,7 @@ void	clear_todo_list(t_todo **first_item);
 t_todo	*add_todo_last(char value[4], t_todo *first_item);
 t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best);
 int		todo_count(t_todo *todo);
+int		min_int(int a, int b);
 
 /*
 10
@@ -141,10 +145,10 @@ int		todo_count(t_todo *todo);
 	|  |	|  |
 	|  |	|  |
 	|  |	|  |
-	|  |	|  |
 	|  |	| 1|
 	|  |	| 0|
-	| 7|	| 6|
+	|  |	| 9|
+	|  |	| 6|
 	| 5|	| 4|
 	| 8|	| 3|
 	| 9|	| 2|
