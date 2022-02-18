@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/18 13:35:41 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/18 19:33:16 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,59 +215,60 @@ int get_min(t_pushswap *ps, char stack_name)
 	return (min_int);
 }
 
-void clear_todo_list(t_todo **first_item)
+int	abs_int(int n)
 {
-	t_todo	*current;
-	t_todo	*prev;
-	
-	current = *first_item;
-	while (current)
-	{
-		prev = current;
-		current = current->next;
-		free(prev);
-	}
-	*first_item = NULL;
+	if (n < 0)
+		return (n * -1);
+	return (n);
 }
 
-t_todo *	add_todo_last(char value[4], t_todo *first_item)
+int *create_array_from_stack(t_item *item, int size)
 {
-	t_todo	*tmp;
-	t_todo	*new_item;
-
-	new_item = create_todo(value);
-	if (new_item == NULL)
-		return (first_item);
-	if (first_item == NULL)
-		return (new_item);
-	tmp = first_item;
-	while (tmp->next)
-		tmp = tmp->next;
-	tmp->next = new_item;
-	return (first_item);
-}
-
-t_todo *create_todo(const char *str)
-{
-	t_todo	*item;
+	int		*result;
 	int		i;
 
-	if (ft_strlen(str)  > 3)
-		return (NULL);
-	item = malloc(sizeof(t_todo));
-	if (item == NULL)
+	result = malloc(sizeof(int) * size);
+	if (! result)
 		return (NULL);
 	i = 0;
-	while (*str)
-		item->value[i++] = *(str++);
-	item->value[i] = 0;
-	item->next = NULL;
-	return (item);
+	while (i < size)
+	{
+		result[i++] = item->value;
+		item = item->next;
+	}
+	return (result);	
 }
 
-int min_int(int a, int b)
+int *create_array_from_stack_rev(t_item *item, int size)
 {
-	if (a < b)
-		return (a);
-	return (b);
+	int		*result;
+	int		i;
+
+	result = malloc(sizeof(int) * size);
+	if (! result)
+		return (NULL);
+	i = 0;
+	while (i < size)
+	{
+		result[i++] = item->value;
+		item = item->prev;
+	}
+	return (result);	
+}
+
+void fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_count *rc)
+{
+	int first_index;
+	int	new_index;
+
+	first_index = binary_search(ps->stack_b->first->value, array, 0, arr_size - 1);
+	if (new > ps->stack_b->max->value || new < ps->stack_b->min->value)
+	{
+		rc->rrb = arr_size - 1 - first_index;
+		rc->rb = arr_size % (arr_size - rc->rrb);
+		return;
+	}
+	new_index = binary_search_place(new, array, 0, arr_size - 1);
+	rc->rrb = new_index - first_index;
+	rc->rb = arr_size % (arr_size - rc->rrb);
 }

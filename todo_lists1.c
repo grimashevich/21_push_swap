@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 13:27:34 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/18 13:33:58 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/18 16:26:33 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,3 +148,61 @@ int todo_count(t_todo *todo)
 	return (count);
 	
 }
+
+void clear_todo_list(t_todo **first_item)
+{
+	t_todo	*current;
+	t_todo	*prev;
+	
+	current = *first_item;
+	while (current)
+	{
+		prev = current;
+		current = current->next;
+		free(prev);
+	}
+	*first_item = NULL;
+}
+
+t_todo *	add_todo_last(char value[4], t_todo *first_item)
+{
+	t_todo	*tmp;
+	t_todo	*new_item;
+
+	new_item = create_todo(value);
+	if (new_item == NULL)
+		return (first_item);
+	if (first_item == NULL)
+		return (new_item);
+	tmp = first_item;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new_item;
+	return (first_item);
+}
+
+t_todo *create_todo(const char *str)
+{
+	t_todo	*item;
+	int		i;
+
+	if (ft_strlen(str)  > 3)
+		return (NULL);
+	item = malloc(sizeof(t_todo));
+	if (item == NULL)
+		return (NULL);
+	i = 0;
+	while (*str)
+		item->value[i++] = *(str++);
+	item->value[i] = 0;
+	item->next = NULL;
+	return (item);
+}
+
+int min_int(int a, int b)
+{
+	if (a < b)
+		return (a);
+	return (b);
+}
+

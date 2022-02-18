@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/18 13:32:58 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/18 19:39:08 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,6 +209,22 @@ int binary_search(int needle, int *haystack, int start, int end)
 	return (binary_search(needle, haystack, pivot, end));
 }
 
+int binary_search_place(int needle, int *haystack, int start, int end)
+{
+	int	pivot;
+	int	size;
+
+	size = (end - start + 1);
+	pivot = size / 2 + start;
+	if (haystack[pivot] < needle && haystack[pivot + 1] > needle)
+		return (pivot);
+	if (size == 2)
+		return (-1);
+	if (needle < haystack[pivot])
+		return (binary_search_place(needle, haystack, start, pivot - 1));
+	return (binary_search_place(needle, haystack, pivot, end));
+}
+
 void array_quick_sort(int *arr, int size)
 {
 	int	wall;
@@ -266,25 +282,6 @@ void print_arr(int *arr, int size)
 	printf("\n");
 }
 
-int *create_array_from_stack(t_dlist *lst, int size)
-{
-	int		*result;
-	t_item	*item;
-	int		i;
-
-	result = malloc(sizeof(int) * size);
-	if (! result)
-		return (NULL);
-	item = lst->first;
-	i = 0;
-	while (i < size)
-	{
-		result[i++] = item->value;
-		item = item->next;
-	}
-	return (result);	
-}
-
 int *update_idexes(t_dlist *lst)
 {
 	int		*array;
@@ -294,7 +291,7 @@ int *update_idexes(t_dlist *lst)
 
 	i = 0;
 	size = lst_count(lst);
-	array = create_array_from_stack(lst, size);
+	array = create_array_from_stack(lst->first, size);
 	if (! array)
 		return (NULL);
 	array_quick_sort(array, size);
@@ -318,15 +315,17 @@ void do_command(t_pushswap *ps, char command[4])
 	{
 		if (ps->stack_b->first == ps->stack_b->last)
 		{
-			ps->max_b = ps->stack_b->first->value;
-			ps->min_b = ps->stack_b->first->value;
+			ps->stack_b->max = ps->stack_b->first;
+			ps->stack_b->min = ps->stack_b->first;
+			ps->stack_b->size = 1;
 		}
 		else
 		{
-			if (ps->stack_b->first->value > ps->max_b)
-				ps->max_b = ps->stack_b->first->value;
-			else if (ps->stack_b->first->value < ps->min_b)
-				ps->min_b = ps->stack_b->first->value;
+			if (ps->stack_b->first->value > ps->stack_b->max->value)
+				ps->stack_b->max = ps->stack_b->first;
+			else if (ps->stack_b->first->value < ps->stack_b->min->value)
+				ps->stack_b->min = ps->stack_b->first;
+			ps->stack_b->size++;
 		}
 	}
 	
@@ -402,9 +401,9 @@ int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 	// if (a_item->value > ps->max_b &&
 	// 		ps->min_b == b_item->prev->value && ps->max_b == b_item->value)
 	// 	return (1);
-	if (a_item->value > ps->max_b && b_item->value == ps->max_b)
+	if (a_item->value > ps->stack_b->max->value && b_item == ps->stack_b->max)
 		return (1);
-	if (a_item->value < ps->min_b && b_item->prev->value == ps->min_b)
+	if (a_item->value < ps->stack_b->min->value &&  b_item->prev == ps->stack_b->min)
 		return (1);
 	return (0);
 
@@ -551,10 +550,38 @@ int main(int argc, char *argv[])
 		ps->size = ft_atoi(argv[1]);
 	ps->stack_a = get_stack(ps->size);
 	
-	// ps->stack_a = create_list();
-	// create_add_item_to_list(0, ps->stack_a);
-	// create_add_item_to_list(2, ps->stack_a);
-	// create_add_item_to_list(1, ps->stack_a);
+	ps->stack_b = create_list();
+	create_add_item_to_list(	 5	, ps->stack_b);
+	create_add_item_to_list(	 2	, ps->stack_b);
+	create_add_item_to_list(	 0	, ps->stack_b);
+	create_add_item_to_list(	50	, ps->stack_b);
+	create_add_item_to_list(	45	, ps->stack_b);
+	create_add_item_to_list(	37	, ps->stack_b);
+	create_add_item_to_list(	20	, ps->stack_b);
+	create_add_item_to_list(	15	, ps->stack_b);
+	create_add_item_to_list(	12	, ps->stack_b);
+	create_add_item_to_list(	 9	, ps->stack_b);
+	ps->stack_b->min = ps->stack_b->second->next;
+	ps->stack_b->max = ps->stack_b->min->next;
+	int *array = create_array_from_stack_rev(ps->stack_b->min, 10);
+	t_rotate_count *rc = malloc(sizeof(t_rotate_count));
+	rc->ra = 0;
+	rc->rb = 0;
+	rc->rra = 0;
+	rc->rrb = 0;
+/*
+
+	[0] [2] [5] [9] [12] [15] [20]
+	
+*/
+	
+	fill_pre_todo(ps, array, 10, 6, rc);
+	fill_pre_todo(ps, array, 10, 3, rc);
+	fill_pre_todo(ps, array, 10, 10, rc);
+
+	return (0);
+
+
 	ps->stack_b = create_list();
 	ps->sorted_array = update_idexes(ps->stack_a);
 	update_math_stat(ps);

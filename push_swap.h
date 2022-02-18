@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/18 13:35:04 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/18 18:57:26 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ typedef struct s_dlist
 	t_item	*second;
 	t_item	*last;
 	int		median;
+	t_item	*min;
+	t_item	*max;
+	int		size;
 } t_dlist;
 
 typedef struct s_pushswap
@@ -43,9 +46,8 @@ typedef struct s_pushswap
 	int		sub_median;
 	int		min;
 	int		max;
-	int		max_b;
-	int		min_b;
 	int		my_count;
+	int		b_array;
 } t_pushswap;
 
 typedef struct s_sort_stage2
@@ -71,6 +73,14 @@ typedef struct s_todo_rotate
 	t_todo	*rra;
 	t_todo	*rrb;
 } t_todo_rotate;
+
+typedef struct s_rotate_count
+{
+	int	ra;
+	int	rra;
+	int	rb;
+	int	rrb;
+} t_rotate_count;
 
 t_item	*create_item(int value);
 t_dlist	*create_list();
@@ -100,6 +110,13 @@ t_todo	*choose_best_todo(t_todo **todo1, t_todo **todo2);
 t_todo	*get_best_from_todo4(t_todo_rotate *todo4);
 void	update_todo4(t_todo_rotate *todo4, char stack, char direction, t_item **current);
 void	do_command(t_pushswap *ps, char command[4]);
+int		binary_search_place(int needle, int *haystack, int start, int end);
+int		abs_int(int n);
+int		*create_array_from_stack(t_item *item, int size);
+int		*create_array_from_stack_rev(t_item *item, int size);
+int		binary_search(int needle, int *haystack, int start, int end);
+int		binary_search_place(int needle, int *haystack, int start, int end);
+void	fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_count *rc);
 
 /*
 10
@@ -153,20 +170,50 @@ void	do_command(t_pushswap *ps, char command[4]);
 	|  |	|  |
 	|  |	|  |
 	|  |	|  |
-	|  |	| 1|
-	|  |	| 0|
-	|  |	| 9|
-	|  |	| 6|
-	| 5|	| 4|
-	| 8|	| 3|
-	| 9|	| 2|
+	|  |	|  |
+	|  |	|  |
+	|  |	|  |
+	|  |	|  |
+	|  |	|  |  
+	|  |	| 5|	 4
+	|  |	| 4|	 3
+	|  |	| 3|	 2
+	|  |	| 1|	 1
+	| 2|	| 0|	 0
+	|11|	|19|	11
+	|18|	|17|	10
+	|14|	|16|	 9
+	|10|	|15|	 8
+	| 9|	|12|	 7
+	|13|	| 8|	 6
+	| 7|	| 6|	 5
+
+
 
 
 	|  |	|  |
 	|  |	|  |
-	| 2|	|  |
-	| 0|	| 3|
-	| 1|	| 4|
+	|  |	|  |
+	|  |	|  |
+	|  |	|  |
+	| 5|	| 0|	[0]
+	| 4|	| 8|	[4]
+	| 2|	| 7|	[3]
+	| 1|	| 6|	[2]
+	| 9|	| 3|	[1]
 
+						[0] [1] [2] [3] [4]
 
+ Отдаю функции формирования массива min элемент, она сразу формирует правильно
+ расподложенный массив.
+
+ Функция, которая ищет правильное местов массиве для нового числа, заполняет
+ пред-todo для него	
+	Если новое число > max ИЛИ новое число меньше min, return max
+	
+ Функция, которая заполняет новую структуру с кол-вом движений в обе стороны
+	В ближайшем направлении: цикл
+	В обратном направлении: (кол-во элеменов МИНУС кол-во движений в первом направлении)
+
+ Фукнция, которая формирует один оптимальный todo и отдает его на исполнение
 */
