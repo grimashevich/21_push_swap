@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/17 18:06:53 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/18 13:35:04 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,14 @@ t_todo	*add_todo_last(char value[4], t_todo *first_item);
 t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best);
 int		todo_count(t_todo *todo);
 int		min_int(int a, int b);
+void	do_todo(t_pushswap *ps, t_todo *item);
+void	t_todo_rotate_init(t_todo_rotate *todo4);
+void	add_todo_and_scroll(char str[4], t_todo **todo_list, t_todo **scroll);
+t_todo	*merge_todo(t_todo *todo1, t_todo *todo2);
+t_todo	*choose_best_todo(t_todo **todo1, t_todo **todo2);
+t_todo	*get_best_from_todo4(t_todo_rotate *todo4);
+void	update_todo4(t_todo_rotate *todo4, char stack, char direction, t_item **current);
+void	do_command(t_pushswap *ps, char command[4]);
 
 /*
 10

@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/17 17:06:42 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/18 13:35:41 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void delete_first_item(t_dlist *lst)
 
 void print_lists(t_dlist *list_a, t_dlist *list_b) //TODO: Удалить перед сдачей
 {
-	return;
+	//return;
 	int 	count_a;
 	int 	count_b;
 	int 	count_ab;
@@ -263,20 +263,6 @@ t_todo *create_todo(const char *str)
 	item->value[i] = 0;
 	item->next = NULL;
 	return (item);
-}
-
-int todo_count(t_todo *todo)
-{
-	int	count;
-
-	count = 0;
-	while (todo)
-	{
-		count++;
-		todo = todo->next;
-	}
-	return (count);
-	
 }
 
 int min_int(int a, int b)
