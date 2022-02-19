@@ -12,7 +12,8 @@ LDFLAGS := -L$(LIBFT_DIR)
 LDLIBS := -lft
 S_FLAGS := -fsanitize=address
 				
-SRC :=		main.c		functions_0.c		lst_manipulation.c		todo_lists1.c
+SRC :=		main.c			functions_0.c		lst_manipulation.c		todo_lists1.c	\
+			totate_count.c	totate_count1.c	
 
 OBJ := $(SRC:%.c=$(OBJ_DIR)/%.o)
 # OBJ_B := $(SRC_B:%.c=$(OBJ_DIR)/%.o)

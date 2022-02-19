@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/18 19:33:16 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/19 15:46:46 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,70 +256,7 @@ int *create_array_from_stack_rev(t_item *item, int size)
 	return (result);	
 }
 
-void fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_count *rc)
-{
-	int first_index;
-	int	new_index;
-
-	first_index = binary_search(ps->stack_b->first->value, array, 0, arr_size - 1);
-	if (new > ps->stack_b->max->value || new < ps->stack_b->min->value)
-	{
-		rc->rrb = arr_size - 1 - first_index;
-		rc->rb = (arr_size - rc->rrb) % arr_size;
-		return;
-	}
-	new_index = binary_search_place(new, array, 0, arr_size - 1);
-	rc->rrb = new_index - first_index;
-	if (rc->rrb < 0)
-	{
-		rc->rb = rc->rrb * -1;
-		rc->rrb = arr_size - rc->rb;
-		return;
-	}
-	rc->rb = (arr_size - rc->rrb) % arr_size;
-}
-
 int min_int_from4(int m1, int m2, int m3, int m4)
 {
 	return (min_int(min_int(m1, m2), min_int(m3, m4)));
-}
-
-/*
-	rc->ra = 4;
-	rc->rb = 12;
-	rc->rra = 6;
-	rc->rrb = 2;
-*/
-
-void finish_pre_todo (t_rotate_count *rc)
-{
-	int forw;
-	int back;
-	int diff1;
-	int diff2;
-	int min;
-
-	forw = abs_int(rc->ra - rc->rb);
-	back = abs_int(rc->rra - rc->rrb);
-	diff1 = rc->ra + rc->rrb;
-	diff2 = rc->rra + rc->rb;
-	min = min_int_from4(forw, back, diff1, diff2);
-	if (min == forw)
-	{
-		rc->rr = min_int(rc->ra, rc->rb);
-		rc->ra = rc->ra - rc->rr;
-		rc->rb = rc->rb - rc->rr;
-	}
-	else if (min == back)
-	{
-		//TODO Останавился тут
-	}
-	else if (min == diff1)
-	{
-
-	}
-	else
-	{
-
-	}
 }

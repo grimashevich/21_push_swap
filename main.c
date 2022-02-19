@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/18 19:39:08 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/19 16:10:19 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,7 +386,7 @@ void is_stacks_sorted(t_pushswap *ps ,t_sort_stage2 *s2)
 
 
 
-
+//TODO Will die
 int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 {
 	// if (a_item->value > b_item->value && a_item->value > b_item->prev->value)
@@ -415,6 +415,7 @@ int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 3. Сравнивает со стеком prev_best, выбирает лучший, а второй удаляет.
 */
 
+//TODO Will die
 t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 {
 	t_item			*current;
@@ -439,6 +440,10 @@ t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 	return (best);
 }
 
+
+/*
+Функция выбирает лучшый вариант для пуша в stack_b и вызывает его
+*/
 void push_b_best(t_pushswap *ps, int a_size)
 {
 	int		i;
@@ -454,27 +459,32 @@ void push_b_best(t_pushswap *ps, int a_size)
 		do_todo(ps, create_todo("pb"));
 		return ;
 	}
-	current = ps->stack_a->first;
-	best_push_b = NULL;
-	i = 0;
-	best_push_size = 1;
-	while (1)
-	{
-		border_distance = min_int(i, a_size - i);
-		i++;
-		if (border_distance > best_push_size )
 		{
-			current = current->next;
-			continue;
+			current = ps->stack_a->first;
+			best_push_b = NULL;
+			i = 0;
+			best_push_size = 1;
+			while (1)
+			{
+				border_distance = min_int(i, a_size - i);
+				i++;
+				if (border_distance > best_push_size )
+				{
+					current = current->next;
+					continue;
+				}
+				prev_best_push_b = best_push_b;
+				best_push_b = get_best_push_b(ps, current, best_push_b);
+				if (prev_best_push_b != best_push_b)
+					best_push_size = todo_count(best_push_b);
+				current = current->next;
+				if (current == ps->stack_a->first || i > ps->size)
+					break;
+			}
 		}
-		prev_best_push_b = best_push_b;
-		best_push_b = get_best_push_b(ps, current, best_push_b);
-		if (prev_best_push_b != best_push_b)
-			best_push_size = todo_count(best_push_b);
-		current = current->next;
-		if (current == ps->stack_a->first || i > ps->size)
-			break;
-	}
+	
+	
+	
 	do_todo(ps, best_push_b);
 }
 

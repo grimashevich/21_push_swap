@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/18 18:57:26 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/19 15:50:36 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct s_rotate_count
 	int	rrb;
 	int	rr;
 	int	rrr;
+	int	total;
 } t_rotate_count;
 
 t_item	*create_item(int value);
@@ -120,6 +121,13 @@ int		binary_search(int needle, int *haystack, int start, int end);
 int		binary_search_place(int needle, int *haystack, int start, int end);
 void	fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_count *rc);
 int		min_int_from4(int m1, int m2, int m3, int m4);
+void	rotate_count_sum(t_rotate_count *rc);
+void	rotate_count_forw(t_rotate_count *rc);
+void	rotate_count_back(t_rotate_count *rc);
+void	rotate_count_diff1(t_rotate_count *rc);
+void	rotate_count_diff2(t_rotate_count *rc);
+void	fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_count *rc);
+void	finish_pre_todo (t_rotate_count *rc);
 
 /*
 10
@@ -215,8 +223,6 @@ int		min_int_from4(int m1, int m2, int m3, int m4);
 	Если новое число > max ИЛИ новое число меньше min, return max
 	
  Функция, которая заполняет новую структуру с кол-вом движений в обе стороны
-	В ближайшем направлении: цикл
-	В обратном направлении: (кол-во элеменов МИНУС кол-во движений в первом направлении)
 
  Фукнция, которая формирует один оптимальный todo и отдает его на исполнение
 */
