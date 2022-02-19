@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:39:46 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/19 15:46:46 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/19 20:52:27 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void delete_first_item(t_dlist *lst)
 
 void print_lists(t_dlist *list_a, t_dlist *list_b) //TODO: Удалить перед сдачей
 {
-	//return;
+	return;
 	int 	count_a;
 	int 	count_b;
 	int 	count_ab;

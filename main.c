@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/19 16:10:19 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/19 21:12:20 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,7 @@ int binary_search_place(int needle, int *haystack, int start, int end)
 
 	size = (end - start + 1);
 	pivot = size / 2 + start;
-	if (haystack[pivot] < needle && haystack[pivot + 1] > needle)
+	if (haystack[pivot] > needle && haystack[pivot - 1] < needle)
 		return (pivot);
 	if (size == 2)
 		return (-1);
@@ -308,9 +308,9 @@ int *update_idexes(t_dlist *lst)
 //TODO Перед сдачей переделать в принтер команд
 void do_command(t_pushswap *ps, char command[4])
 {
-	static int count;
-	printf("   - - - - - %d - - - - -| %s\n", ++count, command);
+	// printf("   - - - - - %d - - - - -| %s\n", ++count, command);
 	auto_manipulation(ps->stack_a, ps->stack_b, command);
+	ps->my_count++;
 	if (! ft_strncmp("pb", command, 3))
 	{
 		if (ps->stack_b->first == ps->stack_b->last)
@@ -329,7 +329,7 @@ void do_command(t_pushswap *ps, char command[4])
 		}
 	}
 	
-	//usleep(USLEEP_TIME);
+	usleep(USLEEP_TIME);
 }
 
 /*
@@ -440,52 +440,78 @@ t_todo *get_best_push_b(t_pushswap *ps, t_item *a_item, t_todo *prev_best)
 	return (best);
 }
 
-
 /*
 Функция выбирает лучшый вариант для пуша в stack_b и вызывает его
 */
 void push_b_best(t_pushswap *ps, int a_size)
 {
-	int		i;
+	/*
 	t_todo	*best_push_b;
 	t_todo	*prev_best_push_b;
 	int		best_push_size;
 	int		border_distance;
+	*/
 
+	int		i;
+	t_rc	*new_rc;
+	t_rc	*best_rc;
 	t_item	*current;
+	int		*b_array;
+	int		first_b_index;
 
 	if (ps->size - a_size < 2)
 	{
-		do_todo(ps, create_todo("pb"));
+		do_command(ps, "pb");
+		//do_todo(ps, create_todo("pb"));
 		return ;
 	}
+/*
+		current = ps->stack_a->first;
+		best_push_b = NULL;
+		i = 0;
+		best_push_size = 1;
+		while (1)
 		{
-			current = ps->stack_a->first;
-			best_push_b = NULL;
-			i = 0;
-			best_push_size = 1;
-			while (1)
+			border_distance = min_int(i, a_size - i);
+			i++;
+			if (border_distance > best_push_size )
 			{
-				border_distance = min_int(i, a_size - i);
-				i++;
-				if (border_distance > best_push_size )
-				{
-					current = current->next;
-					continue;
-				}
-				prev_best_push_b = best_push_b;
-				best_push_b = get_best_push_b(ps, current, best_push_b);
-				if (prev_best_push_b != best_push_b)
-					best_push_size = todo_count(best_push_b);
 				current = current->next;
-				if (current == ps->stack_a->first || i > ps->size)
-					break;
+				continue;
 			}
+			prev_best_push_b = best_push_b;
+			best_push_b = get_best_push_b(ps, current, best_push_b);
+			if (prev_best_push_b != best_push_b)
+				best_push_size = todo_count(best_push_b);
+			current = current->next;
+			if (current == ps->stack_a->first || i > ps->size)
+				break;
 		}
-	
-	
-	
-	do_todo(ps, best_push_b);
+*/	
+	b_array = create_array_from_stack_rev(ps->stack_b->min, ps->size - a_size);
+	first_b_index = binary_search(ps->stack_b->first->value, b_array, 0, ps->size - a_size);
+	current = ps->stack_a->first->prev;
+	best_rc = create_rc();
+	best_rc->total = ps->size + 1;
+	//best_rc->ra = 0;
+	//best_rc->rra = 0;
+	//pre_fill_rc(ps, b_array, ps->size - a_size, current->value, best_rc, first_b_index);
+	//finish_fill_rc(best_rc);
+	i = 0;
+	while (i++ < a_size)
+	{
+		current = current->next;
+		if (min_int(i - 1, a_size - i + 1) >= best_rc->total)
+			continue;
+		new_rc = create_rc();
+		new_rc->ra = i - 1;
+		new_rc->rra = (a_size - i + 1) % a_size;
+		pre_fill_rc(ps, b_array, ps->size - a_size, current->value, new_rc, first_b_index);
+		finish_fill_rc(new_rc);
+		best_rc = choose_best_rc(best_rc, new_rc);
+	}
+	do_rc(ps, best_rc);
+	free(b_array);
 }
 
 
@@ -543,11 +569,50 @@ void update_math_stat(t_pushswap *ps)
 	ps->my_count = 0;
 }
 
-int main(int argc, char *argv[])
-{	
-	t_pushswap	*ps;
-	unsigned long curtime =  time(NULL);
+t_dlist *get_my_stack(int arr[], int size)
+{
+	t_dlist	*list;
+	int		i;
 
+	i = 0;
+	list = create_list();
+	if (! list)
+		return (NULL);
+	
+	while (i < size)
+		create_add_item_to_list(arr[i++], list);
+	return(list);
+}
+
+void check_stack(t_pushswap *ps) //TODO Удалить перед сдачей
+{
+	t_item *tmp;
+	tmp = ps->stack_a->first;
+	for (int i = 0; i < ps->size - 1; i++)
+	{
+		if (tmp->value > tmp->next->value)
+		{
+			printf("ERROR: i=%d\n", i);
+			return;
+		}
+		tmp = tmp->next;
+	}
+	printf("stack order is OK...\n");
+}
+
+int main(int argc, char *argv[])
+{	/*
+	int a[6] = {0,1,2,3,5,9};
+	printf("%d\n", binary_search_place(8, &a[0], 0, 5));
+	return (0);
+	*/
+
+	#include <sys/time.h>
+	struct timeval stop, start;
+	gettimeofday(&start, NULL);
+
+	t_pushswap	*ps;
+	//unsigned long curtime =  time(NULL);
 	ps = malloc(sizeof(t_pushswap));
 	if (! ps)
 		return (1);
@@ -559,44 +624,8 @@ int main(int argc, char *argv[])
 	else
 		ps->size = ft_atoi(argv[1]);
 	ps->stack_a = get_stack(ps->size);
-	
-	ps->stack_b = create_list();
-	create_add_item_to_list(	50	, ps->stack_b);
-	create_add_item_to_list(	45	, ps->stack_b);
-	create_add_item_to_list(	37	, ps->stack_b);
-	create_add_item_to_list(	20	, ps->stack_b);
-	create_add_item_to_list(	15	, ps->stack_b);
-	create_add_item_to_list(	12	, ps->stack_b);
-	create_add_item_to_list(	 9	, ps->stack_b);
-	create_add_item_to_list(	 5	, ps->stack_b);
-	create_add_item_to_list(	 2	, ps->stack_b);
-	create_add_item_to_list(	 0	, ps->stack_b);
-	ps->stack_b->min = ps->stack_b->last;
-	ps->stack_b->max = ps->stack_b->min->next;
-	int *array = create_array_from_stack_rev(ps->stack_b->min, 10);
-	t_rotate_count *rc = malloc(sizeof(t_rotate_count));
-	rc->ra = 0;
-	rc->rb = 0;
-	rc->rra = 0;
-	rc->rrb = 0;
-/*
-         n   f                     
-
-	[0] [2] [5] [9] [12] [15] [20] [37] [45] [50]
-	
-     0   1   2   3   4    5    6    7    8    9
-*/
-	
-	fill_pre_todo(ps, array, 10, -6, rc);
-	fill_pre_todo(ps, array, 10, 4, rc);
-	fill_pre_todo(ps, array, 10, 3, rc);
-	fill_pre_todo(ps, array, 10, 10, rc);
-	fill_pre_todo(ps, array, 10, 60, rc);
-	fill_pre_todo(ps, array, 10, 25, rc);
-
-	return (0);
-
-
+	//int arr[10] = {6,8,3,9,5,2,7,1,4,0};
+	//ps->stack_a = get_my_stack(arr, 10);
 	ps->stack_b = create_list();
 	ps->sorted_array = update_idexes(ps->stack_a);
 	update_math_stat(ps);
@@ -606,7 +635,13 @@ int main(int argc, char *argv[])
 	sort_stack(ps);
 	printf("\n\n");
 	//manual_manipulation(ps->stack_a, ps->stack_b);
+	//printf("Execution time: %lu sec.\n", time(NULL) - curtime);
+	gettimeofday(&stop, NULL);
+	printf("Work time: %lu ms, (%d moves)\n", ((stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec) / 1000,
+			ps->my_count);
+	check_stack(ps);
+
+	
 	free_ps_struct(ps);
-	printf("Execution time: %lu sec.\n", time(NULL) - curtime);
 	return (0);
 }
