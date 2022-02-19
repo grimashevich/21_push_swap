@@ -534,7 +534,7 @@ void update_math_stat(t_pushswap *ps)
 }
 
 int main(int argc, char *argv[])
-{
+{	
 	t_pushswap	*ps;
 	unsigned long curtime =  time(NULL);
 

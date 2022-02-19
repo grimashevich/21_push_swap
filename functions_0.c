@@ -278,3 +278,48 @@ void fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_c
 	}
 	rc->rb = (arr_size - rc->rrb) % arr_size;
 }
+
+int min_int_from4(int m1, int m2, int m3, int m4)
+{
+	return (min_int(min_int(m1, m2), min_int(m3, m4)));
+}
+
+/*
+	rc->ra = 4;
+	rc->rb = 12;
+	rc->rra = 6;
+	rc->rrb = 2;
+*/
+
+void finish_pre_todo (t_rotate_count *rc)
+{
+	int forw;
+	int back;
+	int diff1;
+	int diff2;
+	int min;
+
+	forw = abs_int(rc->ra - rc->rb);
+	back = abs_int(rc->rra - rc->rrb);
+	diff1 = rc->ra + rc->rrb;
+	diff2 = rc->rra + rc->rb;
+	min = min_int_from4(forw, back, diff1, diff2);
+	if (min == forw)
+	{
+		rc->rr = min_int(rc->ra, rc->rb);
+		rc->ra = rc->ra - rc->rr;
+		rc->rb = rc->rb - rc->rr;
+	}
+	else if (min == back)
+	{
+		//TODO Останавился тут
+	}
+	else if (min == diff1)
+	{
+
+	}
+	else
+	{
+
+	}
+}

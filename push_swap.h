@@ -80,6 +80,8 @@ typedef struct s_rotate_count
 	int	rra;
 	int	rb;
 	int	rrb;
+	int	rr;
+	int	rrr;
 } t_rotate_count;
 
 t_item	*create_item(int value);
@@ -117,6 +119,7 @@ int		*create_array_from_stack_rev(t_item *item, int size);
 int		binary_search(int needle, int *haystack, int start, int end);
 int		binary_search_place(int needle, int *haystack, int start, int end);
 void	fill_pre_todo(t_pushswap *ps, int *array, int arr_size, int new, t_rotate_count *rc);
+int		min_int_from4(int m1, int m2, int m3, int m4);
 
 /*
 10
