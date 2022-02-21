@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:10 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/19 20:47:56 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/21 19:10:41 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,14 @@ void	finish_fill_rc(t_rc *rc);
 t_rc	*create_rc(void);
 t_rc	*choose_best_rc(t_rc *rc1, t_rc *rc2);
 void	do_rc(t_pushswap *ps, t_rc *rc);
+int		is_normal_order(t_pushswap *ps, int a, int b, int stack);
+void	sort_algov1_stage1(t_pushswap *ps);
+void	sort_algov1_stage2_vars_init(t_sort_stage2 *s2, t_pushswap *ps);
+void	sort_algov1_stage2(t_pushswap *ps);
+void	sort_algov1_stage3(t_pushswap *ps);
+void	sort_algov1(t_pushswap *ps);
+void	is_stacks_sorted(t_pushswap *ps ,t_sort_stage2 *s2);
+long	ft_atoi_long(const char *str);
 
 /*
 10

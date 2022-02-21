@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   atoi_long.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/18 19:25:12 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/21 18:53:41 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/21 19:10:33 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "push_swap.h"
 
 static int	is_spc(char c)
 {
@@ -70,11 +70,11 @@ static int	is_overlong(char *s, int sign)
 	return (return_clear(s, 0));
 }
 
-int	ft_atoi(const char *str)
+long ft_atoi_long(const char *str)
 {
 	int				i;
 	short int		sign;
-	int				res;
+	long			res;
 	int				overlong;
 
 	i = 0;
@@ -95,5 +95,5 @@ int	ft_atoi(const char *str)
 		return (-1);
 	while ((str[i] >= 48 && str[i] <= 57))
 		res = res * 10 + (str[i++] - 48) * sign;
-	return ((int) res);
+	return ((long) res);
 }

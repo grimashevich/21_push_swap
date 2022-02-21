@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/19 21:12:20 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/21 19:22:43 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,7 +308,9 @@ int *update_idexes(t_dlist *lst)
 //TODO Перед сдачей переделать в принтер команд
 void do_command(t_pushswap *ps, char command[4])
 {
-	// printf("   - - - - - %d - - - - -| %s\n", ++count, command);
+	static int count;
+	(void) count;
+	printf("   - - - - - %d - - - - -| %s\n", ++count, command);
 	auto_manipulation(ps->stack_a, ps->stack_b, command);
 	ps->my_count++;
 	if (! ft_strncmp("pb", command, 3))
@@ -332,75 +334,12 @@ void do_command(t_pushswap *ps, char command[4])
 	usleep(USLEEP_TIME);
 }
 
-/*
-check 2 integers order for stack a (0) or stack b (1)
-a - upper
-b - lower
-*/
-int is_normal_order(t_pushswap *ps, int a, int b, int stack)
-{
-	if (stack == 0)
-	{
-		if (a == ps->max && b == ps->median)
-			return (1);
-		if (a == ps->median && b == ps->max)
-			return (0);
-		return (a < b);
-	}
-	else if (stack == 1)
-	{
-		if (a == ps->min && b == ps->sub_median)
-			return (1);
-		if (a == ps->sub_median && b == ps->min)
-			return (0);
-		return (a > b);
-	}
-	return (0);
-}
-
-void is_stacks_sorted(t_pushswap *ps ,t_sort_stage2 *s2)
-{
-	t_item	*item;
-	t_item	*item2;
-	int		i;
-
-	if (s2->sorted1 && s2->sorted2)
-		return ;
-	item = ps->stack_a->first;
-	item2 = ps->stack_b->first;
-	s2->sorted1 = 1;
-	s2->sorted2 = 1;
-	i = 0;
-	while (i++ <= ps->size / 2 + 1)
-	{
-		if (s2->sorted1 && ! is_normal_order(ps, item->value, item->next->value, 0))
-			s2->sorted1 = 0;
-		if (s2->sorted2 && ! is_normal_order(ps, item2->value, item2->next->value, 1))
-			s2->sorted2 = 0;
-		if (! s2->sorted1 && ! s2->sorted2)
-			break;
-		item = item->next;
-		item2 = item2->next;
-	}
-}
-
-
 
 //TODO Will die
 int is_place_for_push(t_pushswap *ps, t_item *a_item, t_item *b_item)
 {
-	// if (a_item->value > b_item->value && a_item->value > b_item->prev->value)
-	// 	return (0);
-	// if (a_item->value < b_item->value && a_item->value < b_item->prev->value)
-	// 	return (0);
 	if (a_item->value > b_item->value && a_item->value < b_item->prev->value)
 		return (1);
-	// if (a_item->value < ps->min_b && 
-	// 		ps->min_b == b_item->prev->value && ps->max_b == b_item->value)
-	// 	return (1);
-	// if (a_item->value > ps->max_b &&
-	// 		ps->min_b == b_item->prev->value && ps->max_b == b_item->value)
-	// 	return (1);
 	if (a_item->value > ps->stack_b->max->value && b_item == ps->stack_b->max)
 		return (1);
 	if (a_item->value < ps->stack_b->min->value &&  b_item->prev == ps->stack_b->min)
@@ -600,6 +539,33 @@ void check_stack(t_pushswap *ps) //TODO Удалить перед сдачей
 	printf("stack order is OK...\n");
 }
 
+int is_numeric_str(char *str)
+{
+	if (*str == '-')
+		str++;
+	if (*str == 0)
+		return (0);
+	while (*str)
+	{
+		if (! ft_isdigit(*str))
+			return (0);
+		str++;
+	}
+	return (1);
+}
+
+
+//TODO ОСТАНАВИЛСЯ ТУТ
+
+/*
+int add_argv_to_stack(t_pushswap *ps, char *str)
+{
+	if (! is_numeric_str(str))
+		return (0);
+	
+}
+*/
+
 int main(int argc, char *argv[])
 {	/*
 	int a[6] = {0,1,2,3,5,9};
@@ -620,7 +586,7 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 	
 	if (argc < 2)
-		ps->size = 10;
+		ps->size = 2;
 	else
 		ps->size = ft_atoi(argv[1]);
 	ps->stack_a = get_stack(ps->size);
@@ -632,7 +598,10 @@ int main(int argc, char *argv[])
 	
 	print_lists(ps->stack_a, ps->stack_b);
 	usleep(USLEEP_TIME);
-	sort_stack(ps);
+	if (ps->size <= 10)
+		sort_algov1(ps);
+	else
+		sort_stack(ps);
 	printf("\n\n");
 	//manual_manipulation(ps->stack_a, ps->stack_b);
 	//printf("Execution time: %lu sec.\n", time(NULL) - curtime);
@@ -645,3 +614,10 @@ int main(int argc, char *argv[])
 	free_ps_struct(ps);
 	return (0);
 }
+
+/*
+2
+0
+1
+
+*/

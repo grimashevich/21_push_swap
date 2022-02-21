@@ -13,7 +13,7 @@ LDLIBS := -lft
 # S_FLAGS := -fsanitize=address
 				
 SRC :=		main.c			functions_0.c		lst_manipulation.c		todo_lists1.c	\
-			rotate_count.c	rotate_count1.c	
+			rotate_count.c	rotate_count1.c		algov1.c				atoi_long.c
 
 OBJ := $(SRC:%.c=$(OBJ_DIR)/%.o)
 # OBJ_B := $(SRC_B:%.c=$(OBJ_DIR)/%.o)
