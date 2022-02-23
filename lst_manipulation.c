@@ -6,13 +6,13 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 17:52:51 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/19 16:03:34 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/23 15:35:23 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-void swap(t_dlist *lst)
+void	swap(t_dlist *lst)
 {
 	int	n;
 
@@ -23,7 +23,7 @@ void swap(t_dlist *lst)
 	lst->second->value = n;
 }
 
-void push(t_dlist *lst_from, t_dlist *lst_to)
+void	push(t_dlist *lst_from, t_dlist *lst_to)
 {
 	int	value;
 
@@ -35,7 +35,7 @@ void push(t_dlist *lst_from, t_dlist *lst_to)
 	reverse_rotate(lst_to);
 }
 
-void rotate(t_dlist *lst)
+void	rotate(t_dlist *lst)
 {
 	if (lst == NULL || lst->first == lst->last)
 		return ;
@@ -44,7 +44,7 @@ void rotate(t_dlist *lst)
 	lst->second = lst->second->next;
 }
 
-void reverse_rotate(t_dlist *lst)
+void	reverse_rotate(t_dlist *lst)
 {
 	if (lst == NULL || lst->first == lst->last)
 		return ;

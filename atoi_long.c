@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/18 19:25:12 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/21 19:10:33 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/23 15:33:56 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static int	is_overlong(char *s, int sign)
 	return (return_clear(s, 0));
 }
 
-long ft_atoi_long(const char *str)
+long	ft_atoi_long(const char *str)
 {
 	int				i;
 	short int		sign;

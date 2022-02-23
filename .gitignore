@@ -5,3 +5,7 @@ push_swap
 .DS_Store
 old_algo.c
 manual_ps
+ps_tester
+push_swap_bonus
+push_swap_tester
+checker

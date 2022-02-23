@@ -6,16 +6,15 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/19 15:46:07 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/19 19:55:32 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/23 15:46:52 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-
-t_rc *create_rc(void)
+t_rc	*create_rc(void)
 {
-	t_rc *rc;
+	t_rc	*rc;
 
 	rc = malloc(sizeof(t_rc));
 	if (! rc)
@@ -30,7 +29,7 @@ t_rc *create_rc(void)
 	return (rc);
 }
 
-t_rc *choose_best_rc(t_rc *rc1, t_rc *rc2)
+t_rc	*choose_best_rc(t_rc *rc1, t_rc *rc2)
 {
 	if (rc1->total <= rc2->total)
 	{
@@ -38,10 +37,10 @@ t_rc *choose_best_rc(t_rc *rc1, t_rc *rc2)
 		return (rc1);
 	}
 	free(rc1);
-	return(rc2);
+	return (rc2);
 }
 
-void do_rc(t_pushswap *ps, t_rc *rc)
+void	do_rc(t_ps *ps, t_rc *rc)
 {
 	while (rc->rr--)
 		do_command(ps, "rr");
@@ -59,38 +58,37 @@ void do_rc(t_pushswap *ps, t_rc *rc)
 	free(rc);
 }
 
-/*
-Fill only rb and rrb
-*/
-void pre_fill_rc(t_pushswap *ps, int *b_array, int b_arr_size, int new, t_rc *rc, int first_b_index)
+void	pre_fill_rc(t_ps *ps, int *b_array, int b_arr_size, t_int *str)
 {
 	int	new_index;
 
 	new_index = -10;
-	if (new > ps->stack_b->max->value || new < ps->stack_b->min->value)
+	if (str->current->value > ps->stack_b->max->value
+		|| str->current->value < ps->stack_b->min->value)
 	{
-		rc->rrb = b_arr_size - 1 - first_b_index;
-		rc->rb = (b_arr_size - rc->rrb) % b_arr_size;
-		return;
+		str->new_rc->rrb = b_arr_size - 1 - str->first_b_ind;
+		str->new_rc->rb = (b_arr_size - str->new_rc->rrb) % b_arr_size;
+		return ;
 	}
-	new_index = binary_search_place(new, b_array, 0, b_arr_size - 1);
-	rc->rrb = (new_index - first_b_index - 1) % b_arr_size;
-	if (rc->rrb < 0)
+	new_index = binary_search_place(str->current->value, b_array, 0,
+			b_arr_size - 1);
+	str->new_rc->rrb = (new_index - str->first_b_ind - 1) % b_arr_size;
+	if (str->new_rc->rrb < 0)
 	{
-		rc->rb = rc->rrb * -1;
-		rc->rrb = (b_arr_size - rc->rb) % b_arr_size;
+		str->new_rc->rb = str->new_rc->rrb * -1;
+		str->new_rc->rrb = (b_arr_size - str->new_rc->rb) % b_arr_size;
 	}
 	else
-		rc->rb = (b_arr_size - rc->rrb) % b_arr_size;
+		str->new_rc->rb = (b_arr_size - str->new_rc->rrb) % b_arr_size;
 }
 
-void finish_fill_rc(t_rc *rc)
+void	finish_fill_rc(t_rc *rc)
 {
-	int forw;
-	int back;
-	int diff1;
-	int diff2;
-	int min;
+	int	forw;
+	int	back;
+	int	diff1;
+	int	diff2;
+	int	min;
 
 	forw = abs_int(rc->ra - rc->rb);
 	back = abs_int(rc->rra - rc->rrb);

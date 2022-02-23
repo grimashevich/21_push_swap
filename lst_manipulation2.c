@@ -1,39 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   lst_manipulation2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/03 11:38:05 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/23 17:38:36 by EClown           ###   ########.fr       */
+/*   Created: 2022/02/23 13:08:58 by EClown            #+#    #+#             */
+/*   Updated: 2022/02/23 15:35:43 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-
-
-int	main(int argc, char *argv[])
+void	rotate_rotate(t_dlist *lst_a, t_dlist *lst_b)
 {
-	t_ps	*ps;
+	rotate(lst_a);
+	rotate(lst_b);
+}
 
-	ps = ps_init();
-	if (! ps)
-		error_free_exit(NULL);
-	if (argc < 2)
-		error_free_exit(ps);
-	add_argv_to_stack(ps, argc, argv);
-	ps->sorted_array = update_idexes(ps->stack_a);
-	if (has_double_int(ps))
-		error_free_exit(ps);
-	update_math_stat(ps);
-	if (is_sorted(ps))
-		exit(0);
-	if (ps->size <= 10)
-		sort_algov1(ps);
-	else
-		sort_stack(ps);
-	free_ps_struct(ps);
-	return (0);
+void	reverse_rotate_rotate(t_dlist *lst_a, t_dlist *lst_b)
+{
+	reverse_rotate(lst_a);
+	reverse_rotate(lst_b);
+}
+
+void	swap_swap(t_dlist *lst_a, t_dlist *lst_b)
+{
+	swap(lst_a);
+	swap(lst_b);
 }
