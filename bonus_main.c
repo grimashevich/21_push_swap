@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 16:02:21 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/23 18:22:49 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/24 14:21:35 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,12 @@ int	check_do_command(t_ps *ps, char *input)
 	return (1);
 }
 
-
 void	input_command(t_ps *ps)
 {
 	char	str[5];
 	int		i;
 
 	(void) ps;
-
 	i = 0;
 	while (read(0, &str[i], 1))
 	{
@@ -89,11 +87,11 @@ int	main(int argc, char *argv[])
 {
 	t_ps	*ps;
 
+	if (argc < 2)
+		return (0);
 	ps = ps_init();
 	if (! ps)
 		error_free_exit(NULL);
-	if (argc < 2)
-		error_free_exit(ps);
 	add_argv_to_stack(ps, argc, argv);
 	ps->sorted_array = update_idexes(ps->stack_a);
 	if (has_double_int(ps))

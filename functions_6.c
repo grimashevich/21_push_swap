@@ -6,7 +6,7 @@
 /*   By: EClown <eclown@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 16:19:50 by EClown            #+#    #+#             */
-/*   Updated: 2022/02/23 16:19:58 by EClown           ###   ########.fr       */
+/*   Updated: 2022/02/24 15:00:18 by EClown           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ int	is_sorted(t_ps *ps)
 	t_item	*item;
 	int		i;
 
+	if (ps->size == 1)
+		return (1);
 	i = 0;
 	item = ps->stack_a->first;
 	while (i++ < ps->size - 1)
